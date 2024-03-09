@@ -1,0 +1,5 @@
+apiVersion: v2
+description: stock-data-streamer
+name: stock-data-streamer
+version: 1.0.0
+appVersion: "00000001"

@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.fullNameOverride }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.fullNameOverride }}
+      release: {{ .Values.fullNameOverride }}
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.fullNameOverride }}
+        release: {{ .Values.fullNameOverride }}
+        argocd-project: {{.Values.fullNameOverride }}
+        azure.workload.identity/use: "true"
+    spec:
+      {{ if .Values.securityContext }}
+      securityContext: {{- toYaml .Values.securityContext | nindent 12 }}
+      {{ end }}
+      serviceAccountName: "workload-identity-{{ .Values.env.DB_NAME }}"
+      containers:
+        - name: {{ .Values.fullNameOverride }}
+          {{- if .Values.image.tag }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{ else }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          {{- end }}
+
+          imagePullPolicy: {{ default "IfNotPresent" .Values.image.pullPolicy }}
+          {{ if .Values.env }}
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ printf "%s" $key | replace "." "_" | quote }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- range $key, $value := .Values.secrets }}
+            - name: {{ printf "%s" $key | replace "." "_" | quote }}
+              value: {{ $value }}
+            {{- end }}
+            {{- range $key, $value := .Values.commonVaultSecrets }}
+            - name: {{ printf "%s" $key | replace "." "_" | quote }}
+              value: {{ $value }}
+            {{- end }}
+          {{ end }}
+          livenessProbe:
+            httpGet:
+              path: {{ default "actuator/health/liveness" ((.Values.health).liveness).url }}
+              port: {{ default "8080" (.Values.health).port }}
+            initialDelaySeconds: {{ default 20 ((.Values.health).liveness).initialDelaySeconds }}
+            periodSeconds: 60
+            failureThreshold: {{ default 5 ((.Values.health).liveness).failureThreshold}}
+          readinessProbe:
+            httpGet:
+              path: {{ default "actuator/health/readiness" ((.Values.health).readiness).url }}
+              port: {{ default "8080" (.Values.health).port }}
+            initialDelaySeconds: {{ default 20 ((.Values.health).readiness).initialDelaySeconds }}
+            periodSeconds: 60
+            failureThreshold: {{ default 5 ((.Values.health).readiness).failureThreshold}}
+          ports:
+            - name: app-internal
+              containerPort: {{ .Values.container.port }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
