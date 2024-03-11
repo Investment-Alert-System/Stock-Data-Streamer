@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Alpha Vantage API Data Schema",
+  "type": "object",
+  "properties": {
+      "Meta Data": {
+        "type": "object",
+        "properties": {
+          "1. Information": {
+            "type": "string",
+            "pattern": "Intraday \\(5min\\) open, high, low, close prices and volume"
+          },
+          "2. Symbol": {
+            "type": "string"
+          },
+          "3. Last Refreshed": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$"
+          },
+          "4. Interval": {
+            "type": "string",
+            "enum": [
+              "5min"
+            ]
+          },
+          "5. Output Size": {
+            "type": "string",
+            "enum": [
+              "Compact",
+              "Full"
+            ]
+          },
+          "6. Time Zone": {
+            "type": "string",
+            "enum": [
+              "US/Eastern"
+            ]
+          }
+        },
+        "required": [
+          "1. Information",
+          "2. Symbol",
+          "3. Last Refreshed",
+          "4. Interval",
+          "5. Output Size",
+          "6. Time Zone"
+        ],
+        "additionalProperties": false
+      },
+    "Time Series (5min)": {
+      "type": "object",
+      "patternProperties": {
+        "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$": {
+          "type": "object",
+          "format": "date-time",
+          "properties": {
+            "1. open": {
+              "type": "string",
+              "pattern": "^\\d+.\\d{4}$"
+            },
+            "2. high": {
+              "type": "string",
+              "pattern": "^\\d+.\\d{4}$"
+            },
+            "3. low": {
+              "type": "string",
+              "pattern": "^\\d+.\\d{4}$"
+            },
+            "4. close": {
+              "type": "string",
+              "pattern": "^\\d+.\\d{4}$"
+            },
+            "5. volume": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            }
+          },
+          "required": [
+            "1. open",
+            "2. high",
+            "3. low",
+            "4. close",
+            "5. volume"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "Meta Data",
+    "Time Series (5min)"
+  ]
+}
