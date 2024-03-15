@@ -28,8 +28,6 @@ public class DataHandler {
             } else {
                 throw new DataValidationException("Data Validation Failed");
             }
-
-
         } catch (Exception e) {
             throw new RuntimeException("Error while validating data", e.getCause());
         }
