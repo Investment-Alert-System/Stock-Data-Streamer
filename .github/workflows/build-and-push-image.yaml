@@ -1,5 +1,4 @@
 name: Build and Push Docker image
-permissions: write-all
 on:
   push:
     branches:
