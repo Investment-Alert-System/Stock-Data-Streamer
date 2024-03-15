@@ -6,7 +6,7 @@ COPY pom.xml /home/microservice
 COPY mvnw /home/microservice
 COPY mvnw.cmd /home/microservice
 
-RUN mvn -f /home/microservice/pom.xml clean package -B
+RUN mvn -f /home/microservice/pom.xml clean package -B -X
 
 FROM maven:3.8.3-openjdk-17
 
