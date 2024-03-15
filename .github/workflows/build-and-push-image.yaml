@@ -33,5 +33,5 @@ jobs:
           push: true
           tags: ghcr.io/investment-alert-system/stock-data-streamer/app:${{ github.sha }}
           labels: |
-            org.opencontainers.image.source=${{ github.repository }}
+            org.opencontainers.image.source=investment-alert-system/stock-data-streamer
             org.opencontainers.image.author=philipppollmann
