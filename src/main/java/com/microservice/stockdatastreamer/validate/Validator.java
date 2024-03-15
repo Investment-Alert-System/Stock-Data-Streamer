@@ -6,6 +6,7 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.microservice.stockdatastreamer.exception.DataValidationException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,13 +18,13 @@ public class Validator {
 
     private final JsonSchema APIDataSchema;
 
-    public Validator() {
+    public Validator() throws DataValidationException {
         try
         {
             JsonSchemaFactory schemaFactory = JsonSchemaFactory.byDefault();
             this.APIDataSchema = schemaFactory.getJsonSchema("file:src/main/resources/APIDataSchema.json");
         } catch ( ProcessingException e) {
-            throw new RuntimeException("Error while reading schema", e);
+            throw new DataValidationException(e.getMessage());
         }
     }
 

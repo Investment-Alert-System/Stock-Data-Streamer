@@ -1,17 +1,17 @@
 FROM maven:3.8.3-openjdk-17 AS build
 LABEL authors="philipppollmann"
 
-COPY src /home/app/src
-COPY pom.xml /home/app
-COPY mvnw /home/app
-COPY mvnw.cmd /home/app
+COPY src /home/microservice/src
+COPY pom.xml /home/microservice
+COPY mvnw /home/microservice
+COPY mvnw.cmd /home/microservice
 
-RUN mvn -f /home/app/pom.xml clean package -B
+RUN mvn -f /home/microservice/pom.xml clean package -B -X
 
 FROM maven:3.8.3-openjdk-17
 
-COPY --from=build /home/app/target/*.jar /usr/local/lib/app.jar
+COPY --from=build /home/microservice/target/*.jar /usr/local/lib/sds-ms.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","/usr/local/lib/app.jar"]
+ENTRYPOINT ["java","-jar","/usr/local/lib/sds-ms.jar"]

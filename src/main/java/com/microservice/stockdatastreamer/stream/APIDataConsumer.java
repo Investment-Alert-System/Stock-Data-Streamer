@@ -23,9 +23,7 @@ public class APIDataConsumer {
 
     public String fetchData() {
         String url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=" + apikey;
-        String data = restTemplate.getForObject(url, String.class);
-        //System.out.println(data);
-        return data;
+        return restTemplate.getForObject(url, String.class);
     }
 
 }

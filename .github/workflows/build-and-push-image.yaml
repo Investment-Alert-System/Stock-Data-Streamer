@@ -1,5 +1,4 @@
 name: Build and Push Docker image
-
 on:
   push:
     branches:
@@ -31,7 +30,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}/app:${{ github.sha }}
+          tags: ghcr.io/investment-alert-system/stock-data-streamer/app:${{ github.sha }}
           labels: |
-            org.opencontainers.image.source=${{ github.repository }}
+            org.opencontainers.image.source=investment-alert-system/stock-data-streamer
             org.opencontainers.image.author=philipppollmann
