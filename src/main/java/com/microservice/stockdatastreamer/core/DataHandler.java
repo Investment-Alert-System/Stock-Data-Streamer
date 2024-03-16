@@ -4,11 +4,10 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.microservice.stockdatastreamer.config.KafkaConfig;
 import com.microservice.stockdatastreamer.exception.DataValidationException;
 import com.microservice.stockdatastreamer.producer.StockDataProducer;
-import com.microservice.stockdatastreamer.stream.APIDataConsumer;
+import com.microservice.stockdatastreamer.service.AlphaVantageService;
 import com.microservice.stockdatastreamer.validate.Validator;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 
 public class DataHandler {
 
@@ -18,12 +17,12 @@ public class DataHandler {
         this.restTemplateBuilder = restTemplateBuilder;
     }
 
-
-    public void fetchAndValidateData() throws DataValidationException {
-        APIDataConsumer apiDataConsumer = new APIDataConsumer(restTemplateBuilder);
+    public void fetchAndValidateData() {
+        AlphaVantageService apiDataConsumer = new AlphaVantageService(restTemplateBuilder);
         String data = apiDataConsumer.fetchData();
-        Validator validator = new Validator();
+
         try {
+            Validator validator = new Validator();
             ProcessingReport APIDataProcessingReport =  validator.validateResponseMetaData(data);
 
             System.out.println("APIDataProcessingReport: " + APIDataProcessingReport);
@@ -35,7 +34,6 @@ public class DataHandler {
             } else {
                 throw new DataValidationException("Data Validation Failed");
             }
-
         } catch (Exception e) {
             throw new RuntimeException("Error while validating data", e.getCause());
         }
