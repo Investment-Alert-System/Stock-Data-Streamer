@@ -6,7 +6,6 @@ import org.springframework.kafka.annotation.EnableKafkaStreams
 import org.springframework.kafka.core.KafkaTemplate
 
 @Component
-@EnableKafkaStreams
 class StockDataProducer(
     private val kafkaTemplate: KafkaTemplate<String, String>
 ) {

@@ -20,7 +20,6 @@ open class KafkaConfig{
         isAckAfterHandle = false
     }
 
-
     @Bean
     open fun producerFactory(): ProducerFactory<String, String> {
         val configProps= hashMapOf<String, Any>(
