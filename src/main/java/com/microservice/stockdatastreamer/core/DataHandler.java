@@ -11,7 +11,7 @@ import com.microservice.stockdatastreamer.service.DiscordMessenger;
 public class DataHandler {
 
     private final RestTemplateBuilder restTemplateBuilder;
-    private final DiscordMessenger discordMessenger; // Hinzugefügtes Feld
+    private final DiscordMessenger discordMessenger;
 
     public DataHandler(RestTemplateBuilder restTemplateBuilder, DiscordMessenger discordMessenger) {
         this.restTemplateBuilder = restTemplateBuilder;
@@ -44,7 +44,7 @@ public class DataHandler {
                         DateTime dateTime = new DateTime(date);
 
                         if (dateTime.isBefore(DateTime.now()) && (DateTime.now().getMinuteOfHour() - dateTime.getMinuteOfHour()) < 5) {
-                            String message = "Data is freshly updated and validated!";
+
                             discordMessenger.sendToDiscord(
                                     "https://discord.com/api/webhooks/1232976252726546492/N4vlTfxZiLh7YMiq2t3MeRMmN-HA6S5xvUAQpaIhQKDK-W8SLaDNkL_bLdKIJ4lJFQKy",
                                     "Test from Kotlin"
