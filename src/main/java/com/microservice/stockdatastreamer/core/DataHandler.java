@@ -6,13 +6,16 @@ import com.microservice.stockdatastreamer.service.AlphaVantageService;
 import com.microservice.stockdatastreamer.validate.Validator;
 import org.joda.time.DateTime;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import com.microservice.stockdatastreamer.service.DiscordMessenger;
 
 public class DataHandler {
 
     private final RestTemplateBuilder restTemplateBuilder;
+    private final DiscordMessenger discordMessenger; // Hinzugefügtes Feld
 
-    public DataHandler(RestTemplateBuilder restTemplateBuilder) {
+    public DataHandler(RestTemplateBuilder restTemplateBuilder, DiscordMessenger discordMessenger) {
         this.restTemplateBuilder = restTemplateBuilder;
+        this.discordMessenger = discordMessenger; // Initialisiere das DiscordMessenger-Objekt
     }
 
     public void fetchAndValidateData(boolean realFetch) throws DataValidationException {
@@ -31,9 +34,6 @@ public class DataHandler {
             } else {
                 ProcessingReport APIDataProcessingReport = validator.validateResponseMetaData(data);
 
-//            Logger logger = Logger.getLogger(DataHandler.class.getSimpleName());
-//            logger.log(Level.INFO, "APIDataProcessingReport: " + APIDataProcessingReport);
-
                 System.out.println("APIDataProcessingReport: " + APIDataProcessingReport);
                 if (APIDataProcessingReport.isSuccess()) {
 
@@ -44,8 +44,11 @@ public class DataHandler {
                         DateTime dateTime = new DateTime(date);
 
                         if (dateTime.isBefore(DateTime.now()) && (DateTime.now().getMinuteOfHour() - dateTime.getMinuteOfHour()) < 5) {
-                            // TODO: send alert to discord
-                            System.out.println("if");
+                            String message = "Data is freshly updated and validated!";
+                            discordMessenger.sendToDiscord(
+                                    "https://discord.com/api/webhooks/1232976252726546492/N4vlTfxZiLh7YMiq2t3MeRMmN-HA6S5xvUAQpaIhQKDK-W8SLaDNkL_bLdKIJ4lJFQKy",
+                                    "Test from Kotlin"
+                            ); // Aufruf der Discord-Sendemethode
                         } else {
                             throw new DataValidationException("Refresh date is not valid or not in the last 5 minutes.");
                         }
@@ -54,7 +57,6 @@ public class DataHandler {
                     }
 
                 } else {
-//                logger.log(Level.SEVERE, "Data Validation Failed: " + data);
                     System.err.println("Data Validation Failed: " + data);
                     throw new DataValidationException("Data Validation Failed");
                 }
@@ -63,5 +65,4 @@ public class DataHandler {
             throw new DataValidationException(e.getMessage());
         }
     }
-
 }
