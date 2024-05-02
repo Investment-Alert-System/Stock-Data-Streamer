@@ -12,10 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableScheduling
 public class StockdatastreamerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(StockdatastreamerApplication.class, args);
-
-
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(StockdatastreamerApplication.class, args);
+    }
 }
