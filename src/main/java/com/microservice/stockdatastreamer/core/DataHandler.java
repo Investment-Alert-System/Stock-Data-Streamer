@@ -1,32 +1,24 @@
 package com.microservice.stockdatastreamer.core;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.microservice.stockdatastreamer.config.KafkaConfig;
 import com.microservice.stockdatastreamer.exception.DataValidationException;
 import com.microservice.stockdatastreamer.producer.StockDataProducer;
 import com.microservice.stockdatastreamer.service.AlphaVantageService;
 import com.microservice.stockdatastreamer.validate.Validator;
-import org.apache.tomcat.util.json.JSONParser;
-import org.apache.tomcat.util.json.ParseException;
 import org.joda.time.DateTime;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.scheduling.annotation.Scheduled;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.microservice.stockdatastreamer.service.DiscordMessenger;
 
 public class DataHandler {
 
     private final RestTemplateBuilder restTemplateBuilder;
+    private final DiscordMessenger discordMessenger;
 
-    public DataHandler(RestTemplateBuilder restTemplateBuilder) {
+    public DataHandler(RestTemplateBuilder restTemplateBuilder, DiscordMessenger discordMessenger) {
         this.restTemplateBuilder = restTemplateBuilder;
+        this.discordMessenger = discordMessenger; // Initialisiere das DiscordMessenger-Objekt
     }
 
     public void fetchAndValidateData(boolean realFetch, List<String> symbols) throws DataValidationException {
@@ -44,11 +36,8 @@ public class DataHandler {
             Validator validator = new Validator();
             if (data.equals("No data available on weekends.")) {
                 System.out.println(data + "Date:" + DateTime.now());
-            }else {
-                ProcessingReport APIDataProcessingReport =  validator.validateResponseMetaData(data);
-
-//            Logger logger = Logger.getLogger(DataHandler.class.getSimpleName());
-//            logger.log(Level.INFO, "APIDataProcessingReport: " + APIDataProcessingReport);
+            } else {
+                ProcessingReport APIDataProcessingReport = validator.validateResponseMetaData(data);
 
                 System.out.println("APIDataProcessingReport: " + APIDataProcessingReport);
                 if (APIDataProcessingReport.isSuccess()) {
@@ -59,11 +48,12 @@ public class DataHandler {
                         date = date.replace(" ", "T");
                         DateTime dateTime = new DateTime(date);
 
-                        if (dateTime.isBefore(DateTime.now()) &&
-                                ( DateTime.now().getMinuteOfHour() - dateTime.getMinuteOfHour()) < 5 ) {
-                            KafkaConfig kafkaConfig = new KafkaConfig();
-                            StockDataProducer stockDataProducer = new StockDataProducer(kafkaConfig.kafkaTemplate());
-                            stockDataProducer.sendValidData(data);
+                        if (dateTime.isBefore(DateTime.now()) && (DateTime.now().getMinuteOfHour() - dateTime.getMinuteOfHour()) < 5) {
+
+                            discordMessenger.sendToDiscord(
+                                    "https://discord.com/api/webhooks/1232976252726546492/N4vlTfxZiLh7YMiq2t3MeRMmN-HA6S5xvUAQpaIhQKDK-W8SLaDNkL_bLdKIJ4lJFQKy",
+                                    "Test from Kotlin"
+                            ); // Aufruf der Discord-Sendemethode
                         } else {
                             throw new DataValidationException("Refresh date is not valid or not in the last 5 minutes.");
                         }
@@ -72,7 +62,6 @@ public class DataHandler {
                     }
 
                 } else {
-//                logger.log(Level.SEVERE, "Data Validation Failed: " + data);
                     System.err.println("Data Validation Failed: " + data);
                     throw new DataValidationException("Data Validation Failed");
                 }
@@ -81,5 +70,4 @@ public class DataHandler {
             throw new DataValidationException(e.getMessage());
         }
     }
-
 }

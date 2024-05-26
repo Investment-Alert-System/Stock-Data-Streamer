@@ -32,7 +32,7 @@ public class AlphaVantageService {
         return "Failed Fetching Data";
     }
 
-    private String getTestData(){
+    private String getTestData() {
         return "{\n" +
                 "    \"Meta Data\": {\n" +
                 "        \"1. Information\": \"Intraday (5min) open, high, low, close prices and volume\",\n" +

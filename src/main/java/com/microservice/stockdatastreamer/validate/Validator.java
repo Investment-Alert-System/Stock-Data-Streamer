@@ -19,11 +19,10 @@ public class Validator {
     private final JsonSchema APIDataSchema;
 
     public Validator() throws DataValidationException {
-        try
-        {
+        try {
             JsonSchemaFactory schemaFactory = JsonSchemaFactory.byDefault();
             this.APIDataSchema = schemaFactory.getJsonSchema("file:src/main/resources/APIDataSchema.json");
-        } catch ( ProcessingException e) {
+        } catch (ProcessingException e) {
             throw new DataValidationException(e.getMessage());
         }
     }
