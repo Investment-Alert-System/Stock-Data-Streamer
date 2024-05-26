@@ -1,15 +1,14 @@
 package com.microservice.stockdatastreamer.core;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.microservice.stockdatastreamer.config.KafkaConfig;
 import com.microservice.stockdatastreamer.exception.DataValidationException;
-import com.microservice.stockdatastreamer.producer.StockDataProducer;
 import com.microservice.stockdatastreamer.service.AlphaVantageService;
+import com.microservice.stockdatastreamer.service.DiscordMessenger;
 import com.microservice.stockdatastreamer.validate.Validator;
 import org.joda.time.DateTime;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import com.microservice.stockdatastreamer.service.DiscordMessenger;
+
+import java.util.List;
 
 public class DataHandler {
 
@@ -27,10 +26,10 @@ public class DataHandler {
         if (symbols == null || symbols.isEmpty()) {
             data = apiDataConsumer.fetchData(realFetch, symbols);
         } else if (DateTime.now().getDayOfWeek() <= 5) {
-            data = apiDataConsumer.fetchData(realFetch , symbols);
+            data = apiDataConsumer.fetchData(realFetch, symbols);
         } else {
-           data = "There are no supported symbols in this day! (Weekend??)";
-       }
+            data = "There are no supported symbols in this day! (Weekend??)";
+        }
 
         try {
             Validator validator = new Validator();

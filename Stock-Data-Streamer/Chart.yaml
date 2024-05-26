@@ -1,5 +1,6 @@
 apiVersion: v2
-description: stock-data-streamer
 name: stock-data-streamer
-version: 1.0.0
-appVersion: "00000001"
+description: A Helm chart for Kubernetes to deploy the stock-data-streamer app
+type: application
+version: 0.1.0
+appVersion: "1.0"

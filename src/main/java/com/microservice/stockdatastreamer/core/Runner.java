@@ -14,7 +14,7 @@ public class Runner {
 
     @Scheduled(fixedRate = 10000) // 308000 > 5 minutes
     public static void runDataStreamer() throws DataValidationException {
-        DataHandler dataHandler = new DataHandler(new RestTemplateBuilder());
+        DataHandler dataHandler = new DataHandler(new RestTemplateBuilder(), new DiscordMessenger());
         ConfigurationHandler configurationHandler = new ConfigurationHandler();
 
         List<String> symbolsList = configurationHandler.getDataPointsList();
