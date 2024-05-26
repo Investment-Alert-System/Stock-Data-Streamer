@@ -1,6 +1,7 @@
 package com.microservice.stockdatastreamer.core;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.microservice.stockdatastreamer.config.KafkaConfig;
 import com.microservice.stockdatastreamer.exception.DataValidationException;
@@ -8,12 +9,14 @@ import com.microservice.stockdatastreamer.producer.StockDataProducer;
 import com.microservice.stockdatastreamer.service.AlphaVantageService;
 import com.microservice.stockdatastreamer.validate.Validator;
 import org.apache.tomcat.util.json.JSONParser;
+import org.apache.tomcat.util.json.ParseException;
 import org.joda.time.DateTime;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,13 +29,15 @@ public class DataHandler {
         this.restTemplateBuilder = restTemplateBuilder;
     }
 
-    public void fetchAndValidateData(boolean realFetch) throws DataValidationException {
+    public void fetchAndValidateData(boolean realFetch, List<String> symbols) throws DataValidationException {
         AlphaVantageService apiDataConsumer = new AlphaVantageService(restTemplateBuilder);
         String data;
-       if (DateTime.now().getDayOfWeek() <= 5) {
-           data = apiDataConsumer.fetchData(realFetch);
-       } else {
-           data = "No data available on weekends.";
+        if (symbols == null || symbols.isEmpty()) {
+            data = apiDataConsumer.fetchData(realFetch, symbols);
+        } else if (DateTime.now().getDayOfWeek() <= 5) {
+            data = apiDataConsumer.fetchData(realFetch , symbols);
+        } else {
+           data = "There are no supported symbols in this day! (Weekend??)";
        }
 
         try {

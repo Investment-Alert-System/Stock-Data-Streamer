@@ -6,6 +6,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Component
 public class AlphaVantageService {
 
@@ -18,13 +20,16 @@ public class AlphaVantageService {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    public String fetchData(boolean realfetch) {
-        if (realfetch) {
-            String url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=" + apikey;
-            return restTemplate.getForObject(url, String.class);
+    public String fetchData(boolean realfetch, List<String> symbols) {
+        if (realfetch && symbols != null && !symbols.isEmpty()) {
+            for (String symbol : symbols) {
+                String url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + symbol + "&interval=5min&apikey=" + apikey;
+                return restTemplate.getForObject(url, String.class);
+            }
+
         } else
             return getTestData();
-
+        return "Failed Fetching Data";
     }
 
     private String getTestData(){
