@@ -3,15 +3,13 @@ package com.microservice.stockdatastreamer.controller;
 
 import com.microservice.stockdatastreamer.core.ConfigurationHandler;
 import com.microservice.stockdatastreamer.exception.LimitHandlingException;
-import org.apache.kafka.common.protocol.types.Field;
+import com.microservice.stockdatastreamer.service.StockSymbol;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +54,16 @@ public class ConfigurationController {
             return sendResponse("Saved " + mapsize + " Alert Points", HttpStatus.OK);
         }
     }
+
+    @GetMapping("/getAllStocks")
+    public List<StockSymbol> getAllStocks() throws IOException {
+        List<StockSymbol> symbolsList = ConfigurationHandler.getAllStocks();
+        if (symbolsList.isEmpty()) {
+            throw new IOException("Failed to read stock list");
+        }
+        return symbolsList;
+    }
+
 
     @DeleteMapping("/deleteSymbols")
     public ResponseEntity<String> deleteSymbols() {
