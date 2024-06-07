@@ -7,17 +7,21 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
 public class Runner {
 
-    @Scheduled(fixedRate = 10000) // 308000 > 5 minutes
-    public static void runDataStreamer() throws DataValidationException {
+    @Scheduled(fixedRate = 100000) // 308000 > 5 minutes
+    public static void runDataStreamer() throws IOException, DataValidationException {
         DataHandler dataHandler = new DataHandler(new RestTemplateBuilder(), new DiscordMessenger());
-        ConfigurationHandler configurationHandler = new ConfigurationHandler();
-
-        List<String> symbolsList = configurationHandler.getDataPointsList();
+        List<String> symbolsList = null;
+        try {
+            symbolsList = ConfigurationHandler.getDataPointsFromFile();
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
+        }
         dataHandler.fetchAndValidateData(true, symbolsList);
 
 

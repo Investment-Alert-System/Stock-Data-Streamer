@@ -2,15 +2,18 @@ package com.microservice.stockdatastreamer.controller;
 
 
 import com.microservice.stockdatastreamer.core.ConfigurationHandler;
+import com.microservice.stockdatastreamer.exception.LimitHandlingException;
 import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/datahandler/configuration")
@@ -25,15 +28,60 @@ public class ConfigurationController {
 
 
     @PostMapping("/setDataPoints")
-    public ResponseEntity<String> setDataPoints(@RequestBody String[] dataPoints) {
-        if (dataPoints.length == 0) {
+    public ResponseEntity<String> setDataPoints(@RequestBody List<String> dataPoints) throws IOException {
+        if (dataPoints.isEmpty()) {
             return sendResponse("Invalid length of data points", HttpStatus.BAD_REQUEST);
         }
-        int savedDataPoints = configurationHandler.handleDataPoints(dataPoints);
-        if (savedDataPoints == 0) {
+        List<String> extendedDataPoints = ConfigurationHandler.getDataPointsFromFile();
+        extendedDataPoints.addAll(dataPoints);
+        int savedDataPoints = configurationHandler.handleDataPoints(extendedDataPoints);
+        if (!(savedDataPoints > 0)) {
             return sendResponse("Invalid saved data points", HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
             return sendResponse("Saved data points", HttpStatus.OK);
+        }
+    }
+
+    @PostMapping("/setAlerts")
+    public ResponseEntity<String> setAlertLimitPerSymbol(@RequestBody Map<String, Double> alertMap) throws IOException, LimitHandlingException {
+        if (alertMap.isEmpty()) {
+            return sendResponse("Invalid Data Points, please specify at least one symbol", HttpStatus.BAD_REQUEST);
+        } else {
+            Map<String, Double> extendedAlertMap = ConfigurationHandler.getAlertDataFromFile();
+            extendedAlertMap.putAll(alertMap);
+            int mapsize = configurationHandler.setAlertingForSymbols(extendedAlertMap);
+            if (mapsize == 0) {
+                return sendResponse("Invalid Data Points, please specify one valid symbol", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return sendResponse("Saved " + mapsize + " Alert Points", HttpStatus.OK);
+        }
+    }
+
+    @DeleteMapping("/deleteSymbols")
+    public ResponseEntity<String> deleteSymbols() {
+        try {
+            boolean success = configurationHandler.deleteDataPointsFromFile();
+            if (success) {
+                return sendResponse("Successfully deleted symbols", HttpStatus.OK);
+            } else
+                return sendResponse("Failed to delete symbols", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            e.getMessage();
+            return sendResponse("Delete data points failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/deleteAlerting")
+    public ResponseEntity<String> deleteAlerting() {
+        try {
+            boolean success = configurationHandler.deleteAlertDataFromFile();
+            if (success) {
+               return sendResponse("Delete data points successful", HttpStatus.OK);
+            } else
+                return sendResponse("Delete data points failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            e.getMessage();
+            return sendResponse("Delete data points failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
