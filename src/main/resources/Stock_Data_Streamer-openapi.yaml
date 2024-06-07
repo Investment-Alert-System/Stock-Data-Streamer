@@ -1,0 +1,88 @@
+openapi: "3.1.0"
+info:
+  title: "Stock_Data_Streamer API"
+  description: "Stock_Data_Streamer API"
+  version: "1.0.0"
+servers:
+  - url: "https://Stock_Data_Streamer"
+paths:
+  /datahandler/configuration/deleteAlerting:
+    delete:
+      summary: "DELETE datahandler/configuration/deleteAlerting"
+      operationId: "deleteAlerting"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /datahandler/configuration/deleteSymbols:
+    delete:
+      summary: "DELETE datahandler/configuration/deleteSymbols"
+      operationId: "deleteSymbols"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /datahandler/configuration/getAllStocks:
+    get:
+      summary: "GET datahandler/configuration/getAllStocks"
+      operationId: "getAllStocks"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/StockSymbol"
+  /datahandler/configuration/setAlerts:
+    post:
+      summary: "POST datahandler/configuration/setAlerts"
+      operationId: "setAlertLimitPerSymbol"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /datahandler/configuration/setDataPoints:
+    post:
+      summary: "POST datahandler/configuration/setDataPoints"
+      operationId: "setDataPoints"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+components:
+  schemas:
+    StockSymbol:
+      type: "object"
+      properties:
+        symbol:
+          type: "string"
+        companyName:
+          type: "string"
