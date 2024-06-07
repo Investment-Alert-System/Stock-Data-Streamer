@@ -42,7 +42,7 @@ public class ConfigurationHandler {
         for (Map.Entry<String, Double> entry : symbolLimitsMap.entrySet()) {
             String symbol = entry.getKey();
             double limit = entry.getValue();
-            if (!(symbol.length() <= 4) && !(limit > 0)){
+            if (!(symbol.length() <= 5) && !(limit > 0)){
                 throw new LimitHandlingException("Symbol or limit are not permitted! Stock:" + symbol + " Limit:" + limit);
             }
         }
