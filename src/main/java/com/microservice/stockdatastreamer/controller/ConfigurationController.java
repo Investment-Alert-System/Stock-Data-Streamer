@@ -64,7 +64,7 @@ public class ConfigurationController {
         return symbolsList;
     }
 
-
+    @GetMapping("/getAlerts")
     @DeleteMapping("/deleteSymbols")
     public ResponseEntity<String> deleteSymbols() {
         try {
