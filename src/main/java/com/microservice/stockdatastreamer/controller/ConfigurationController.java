@@ -7,6 +7,7 @@ import com.microservice.stockdatastreamer.service.StockSymbol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -64,7 +65,7 @@ public class ConfigurationController {
         return symbolsList;
     }
 
-    @GetMapping("/getAlerts")
+   // @GetMapping("/getAlerts")
     @DeleteMapping("/deleteSymbols")
     public ResponseEntity<String> deleteSymbols() {
         try {
