@@ -40,7 +40,7 @@ public class DataHandler {
             } else {
                 ProcessingReport APIDataProcessingReport = validator.validateResponseMetaData(data);
 
-                //System.out.println("APIDataProcessingReport: " + APIDataProcessingReport);
+                System.out.println("APIDataProcessingReport: " + APIDataProcessingReport);
                 if (APIDataProcessingReport.isSuccess()) {
 
                     int dateindex = data.indexOf("3. Last Refreshed");
