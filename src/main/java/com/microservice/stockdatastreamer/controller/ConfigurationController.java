@@ -1,6 +1,5 @@
 package com.microservice.stockdatastreamer.controller;
 
-
 import com.microservice.stockdatastreamer.core.ConfigurationHandler;
 import com.microservice.stockdatastreamer.exception.LimitHandlingException;
 import com.microservice.stockdatastreamer.service.StockSymbol;
@@ -48,11 +47,14 @@ public class ConfigurationController {
         } else {
             Map<String, Double> extendedAlertMap = ConfigurationHandler.getAlertDataFromFile();
             extendedAlertMap.putAll(alertMap);
+            List<String> extendedDataPoints = ConfigurationHandler.getDataPointsFromFile();
+            extendedDataPoints.addAll(alertMap.keySet());
+            int savedDataPoints = configurationHandler.handleDataPoints(extendedDataPoints);
             int mapsize = configurationHandler.setAlertingForSymbols(extendedAlertMap);
-            if (mapsize == 0) {
+            if (mapsize == 0 || savedDataPoints == 0) {
                 return sendResponse("Invalid Data Points, please specify one valid symbol", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            return sendResponse("Saved " + mapsize + " Alert Points", HttpStatus.OK);
+            return sendResponse("Saved " + mapsize + " Alert Points and " + savedDataPoints + " Data Points!", HttpStatus.OK);
         }
     }
 
@@ -65,7 +67,16 @@ public class ConfigurationController {
         return symbolsList;
     }
 
-   // @GetMapping("/getAlerts")
+    @GetMapping("/getAlerts")
+    public Map<String, Double> getAllAlerts() throws IOException {
+        Map<String, Double> alertMap = ConfigurationHandler.getAlertDataFromFile();
+        if (alertMap.isEmpty()) {
+            throw new IOException("No alert data found");
+        }
+        return alertMap;
+    }
+
+
     @DeleteMapping("/deleteSymbols")
     public ResponseEntity<String> deleteSymbols() {
         try {

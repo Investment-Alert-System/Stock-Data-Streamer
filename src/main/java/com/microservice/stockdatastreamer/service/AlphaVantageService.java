@@ -20,16 +20,12 @@ public class AlphaVantageService {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    public String fetchData(boolean realfetch, List<String> symbols) {
-        if (realfetch && symbols != null && !symbols.isEmpty()) {
-            for (String symbol : symbols) {
-                String url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + symbol + "&interval=5min&apikey=" + apikey;
-                return restTemplate.getForObject(url, String.class);
-            }
-
+    public String fetchData(boolean realfetch, String symbol) {
+        if (realfetch && symbol != null && !symbol.isEmpty()) {
+            String url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + symbol + "&interval=5min&apikey=" + apikey;
+            return restTemplate.getForObject(url, String.class);
         } else
             return getTestData();
-        return "Failed Fetching Data";
     }
 
     private String getTestData() {

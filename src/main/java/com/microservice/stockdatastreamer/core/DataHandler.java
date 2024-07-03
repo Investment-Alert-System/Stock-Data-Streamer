@@ -22,13 +22,13 @@ public class DataHandler {
         this.discordMessenger = discordMessenger; // Initialisiere das DiscordMessenger-Objekt
     }
 
-    public void fetchAndValidateData(boolean realFetch, List<String> symbols) throws DataValidationException {
+    public void fetchAndValidateData(boolean realFetch, String symbol) throws DataValidationException {
         AlphaVantageService apiDataConsumer = new AlphaVantageService(restTemplateBuilder);
         String data;
-        if (symbols == null || symbols.isEmpty()) {
-            data = apiDataConsumer.fetchData(realFetch, symbols);
+        if (symbol == null || symbol.isEmpty()) {
+            data = apiDataConsumer.fetchData(realFetch, symbol);
         } else if (DateTime.now().getDayOfWeek() <= 5) {
-            data = apiDataConsumer.fetchData(realFetch, symbols);
+            data = apiDataConsumer.fetchData(realFetch, symbol);
         } else {
             data = "There are no supported symbols in this day! (Weekend??)";
         }
@@ -48,7 +48,7 @@ public class DataHandler {
                         String date = data.substring(dateindex + 21, dateindex + 40);
                         date = date.replace(" ", "T");
                         DateTime dateTime = new DateTime(date);
-                        System.out.println(data);
+//                        System.out.println(data);
 
                         if (dateTime.isBefore(DateTime.now()) && (DateTime.now().getMinuteOfHour() - dateTime.getMinuteOfHour()) < 5) {
                             LimitHandler limitHandler = new LimitHandler();
@@ -64,11 +64,11 @@ public class DataHandler {
                                         for (Map.Entry<String, Double> symbolEntry : dateEntry.getValue().entrySet()) {
                                             String alertDate = dateEntry.getKey().substring(0, dateEntry.getKey().indexOf(" "));
                                             String alertTime = dateEntry.getKey().substring(dateEntry.getKey().indexOf(" ") + 1);
-                                            String symbol = symbolEntry.getKey();
+                                            String stocksymbol = symbolEntry.getKey();
                                             Double value = symbolEntry.getValue();
                                             discordMessenger.sendToDiscord(
                                                     "https://discord.com/api/webhooks/1232976252726546492/N4vlTfxZiLh7YMiq2t3MeRMmN-HA6S5xvUAQpaIhQKDK-W8SLaDNkL_bLdKIJ4lJFQKy",
-                                                    "Stock Alert! Date : " + alertDate +  "; Time: " + alertTime + "; Stock: " + symbol + "; Value: " + value
+                                                    "Stock Alert! Date : " + alertDate +  "; Time: " + alertTime + "; Stock: " + stocksymbol + "; Value: " + value
                                             ); // Aufruf der Discord-Sendemethode
                                         }
 

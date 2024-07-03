@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 
 @Getter
@@ -17,14 +18,11 @@ import java.util.*;
 @Repository
 public class ConfigurationHandler {
 
-   private static final String DATA_POINTS_FILE_PATH = "src/main/resources/dataPoints.json";
-   private static final String ALERTING_FILE_PATH = "src/main/resources/alertData.json";
-   private static final String ALL_STOCKS_FILE_PATH = "src/main/resources/stockSymbols.json";
    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public int handleDataPoints(List<String> dataPointsFromEndpoint) throws IOException {
         if (!dataPointsFromEndpoint.isEmpty()) {
-            File dataPointsFile = new File(DATA_POINTS_FILE_PATH);
+            File dataPointsFile = new File(getFilePath("data"));
             for (String dataPoint : dataPointsFromEndpoint) {
                 dataPoint = dataPoint.trim().toUpperCase();
                 if (dataPoint.length() > 4) {
@@ -38,7 +36,7 @@ public class ConfigurationHandler {
     }
 
     public int setAlertingForSymbols(Map<String, Double> symbolLimitsMap) throws IOException, LimitHandlingException {
-        File alertDataFile = new File(ALERTING_FILE_PATH);
+        File alertDataFile = new File(getFilePath("alert"));
         for (Map.Entry<String, Double> entry : symbolLimitsMap.entrySet()) {
             String symbol = entry.getKey();
             double limit = entry.getValue();
@@ -51,7 +49,7 @@ public class ConfigurationHandler {
     }
 
     public static List<String> getDataPointsFromFile() throws IOException {
-        File dataPointsFile = new File(DATA_POINTS_FILE_PATH);
+        File dataPointsFile = new File(getFilePath("data"));
         if (!dataPointsFile.exists()) {
             return new ArrayList<>();
         }
@@ -72,7 +70,7 @@ public class ConfigurationHandler {
     }
 
     private static Map<String, String> getStocksFromFile() throws IOException {
-        File stockSymbolsFile = new File(ALL_STOCKS_FILE_PATH);
+        File stockSymbolsFile = new File(getFilePath("all"));
         if (!stockSymbolsFile.exists()) {
             return new HashMap<>();
         }
@@ -80,7 +78,7 @@ public class ConfigurationHandler {
     }
 
     public static Map<String, Double> getAlertDataFromFile() throws IOException {
-        File alertDataFile = new File(ALERTING_FILE_PATH);
+        File alertDataFile = new File(getFilePath("alert"));
         if (!alertDataFile.exists()) {
             return new HashMap<>();
         }
@@ -88,7 +86,7 @@ public class ConfigurationHandler {
     }
 
     public boolean deleteDataPointsFromFile() throws IOException {
-        File dataPointsFile = new File(DATA_POINTS_FILE_PATH);
+        File dataPointsFile = new File(getFilePath("data"));
         if (!dataPointsFile.exists()) {
             return false;
         } else
@@ -96,12 +94,32 @@ public class ConfigurationHandler {
     }
 
     public boolean deleteAlertDataFromFile() throws IOException {
-        File alertDataFile = new File(ALERTING_FILE_PATH);
+        File alertDataFile = new File(getFilePath("alert"));
         if (!alertDataFile.exists()) {
             return false;
         } else
             return alertDataFile.delete();
     }
+
+    private static String getFilePath (String fileContent) {
+        boolean testpath = new File("src/main/resources/APIDataSchema.json").exists();
+        String path = "";
+        if (testpath) {
+            path = "src/main/resources";
+        } else
+            path = "usr/local/lib/sds-build";
+
+        switch (fileContent) {
+            case "data":
+                return path + "/dataPoints.json";
+            case "alert":
+                return path + "/alertData.json";
+            case "all":
+                return path + "/stockSymbols.json";
+        }
+        return "Wrong file content";
+    }
+
 
 
 }

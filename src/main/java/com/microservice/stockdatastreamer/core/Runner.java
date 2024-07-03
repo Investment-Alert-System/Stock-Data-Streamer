@@ -22,7 +22,14 @@ public class Runner {
         } catch (IOException e) {
             throw new IOException(e.getMessage());
         }
-        dataHandler.fetchAndValidateData(true, symbolsList);
+        if (symbolsList != null && !symbolsList.isEmpty()) {
+            for (String symbol : symbolsList) {
+                dataHandler.fetchAndValidateData(true, symbol);
+            }
+        }
+
+
+
 
 
     }

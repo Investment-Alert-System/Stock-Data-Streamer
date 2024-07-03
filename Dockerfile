@@ -10,8 +10,9 @@ RUN mvn -f /home/microservice/pom.xml clean package -B
 
 FROM maven:3.8.3-openjdk-17
 
-COPY --from=build /home/microservice/target/*.jar /usr/local/lib/sds-ms.jar
+COPY --from=build /home/microservice/target/*.jar /usr/local/lib/sds-build/sds-ms.jar
+COPY  --from=build /home/microservice/target/classes/*.json /usr/local/lib/sds-build
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","/usr/local/lib/sds-ms.jar"]
+ENTRYPOINT ["java","-jar","/usr/local/lib//sds-build/sds-ms.jar"]
