@@ -24,8 +24,10 @@ public class AlphaVantageService {
         if (realfetch && symbol != null && !symbol.isEmpty()) {
             String url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + symbol + "&interval=5min&apikey=" + apikey;
             return restTemplate.getForObject(url, String.class);
-        } else
+        } else {
+            System.out.println("Starting with Test Data - no real Fetch!");
             return getTestData();
+        }
     }
 
     private String getTestData() {
