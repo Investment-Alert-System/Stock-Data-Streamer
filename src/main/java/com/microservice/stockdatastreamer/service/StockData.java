@@ -41,9 +41,6 @@ public class StockData {
     @Setter
     public static class DailyData {
 
-        //Pattern pattern = Pattern.compile("^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$");
-        @JsonFormat(pattern = "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}")
-        private String date;
         @JsonProperty("1. open")
         private double open;
         @JsonProperty("2. high")

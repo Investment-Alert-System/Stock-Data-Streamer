@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class Runner {
 
-    @Scheduled(fixedRate = 100000) // 308000 > 5 minutes
+    @Scheduled(fixedRate = 308000) // 308000 > 5 minutes
     public static void runDataStreamer() throws IOException, DataValidationException {
         DataHandler dataHandler = new DataHandler(new RestTemplateBuilder(), new DiscordMessenger());
         List<String> symbolsList = null;

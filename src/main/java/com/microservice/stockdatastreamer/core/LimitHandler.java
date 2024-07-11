@@ -27,7 +27,6 @@ public class LimitHandler {
             for (Map.Entry<String, StockData.DailyData> entry : dailyDataMap.entrySet()) {
                 StockData.DailyData dailyData = entry.getValue();
                 double high = dailyData.getHigh();
-                double low = dailyData.getLow();
                 if (high >= alertHigh) {
                     resultMap.put(entry.getKey(), Map.of(dataSymbol, high));
                     return resultMap;
