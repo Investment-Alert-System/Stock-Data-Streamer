@@ -69,11 +69,7 @@ public class ConfigurationController {
 
     @GetMapping("/getAlerts")
     public Map<String, Double> getAllAlerts() throws IOException {
-        Map<String, Double> alertMap = ConfigurationHandler.getAlertDataFromFile();
-        if (alertMap.isEmpty()) {
-            throw new IOException("No alert data found");
-        }
-        return alertMap;
+        return ConfigurationHandler.getAlertDataFromFile();
     }
 
 
